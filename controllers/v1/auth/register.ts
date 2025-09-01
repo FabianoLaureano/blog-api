@@ -24,33 +24,33 @@ const register = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  const newUser = await User.create({
-    username,
-    email,
-    password,
-    role,
-  });
-
-  const accessToken = generateAccessToken(newUser._id);
-  const refreshToken = generateRefreshToken(newUser._id);
-
-  await Token.create({
-    token: refreshToken,
-    userId: newUser._id,
-  });
-
-  logger.info("Refresh token created for user", {
-    userId: newUser._id,
-    token: refreshToken,
-  });
-
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: config.NODE_ENV === "production",
-    sameSite: "strict",
-  });
-
   try {
+    const newUser = await User.create({
+      username,
+      email,
+      password,
+      role,
+    });
+
+    const accessToken = generateAccessToken(newUser._id);
+    const refreshToken = generateRefreshToken(newUser._id);
+
+    await Token.create({
+      token: refreshToken,
+      userId: newUser._id,
+    });
+
+    logger.info("Refresh token created for user", {
+      userId: newUser._id,
+      token: refreshToken,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: config.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
     res.status(201).json({
       user: {
         username: newUser.username,
