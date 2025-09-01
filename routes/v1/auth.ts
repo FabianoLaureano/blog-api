@@ -6,6 +6,8 @@ import User from "../../models/user.ts";
 import login from "../../controllers/v1/auth/login.ts";
 import bcrypt from "bcrypt";
 import refreshToken from "../../controllers/v1/auth/refresh-token.ts";
+import logout from "../../controllers/v1/auth/logout.ts";
+import authenticate from "../../middlewares/authenticate.ts";
 
 const router = Router();
 
@@ -92,5 +94,7 @@ router.post(
   validationError,
   refreshToken
 );
+
+router.post("/logout", authenticate, logout);
 
 export default router;
