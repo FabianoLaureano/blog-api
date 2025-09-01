@@ -28,6 +28,11 @@ const login = async (req: Request, res: Response): Promise<void> => {
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
+    await Token.create({
+      token: refreshToken,
+      userId: user._id,
+    });
+
     logger.info("Refresh token created for user", {
       userId: user._id,
       token: refreshToken,
