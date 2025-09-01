@@ -13,6 +13,7 @@ const config = {
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET!,
   ACESS_TOKEN_EXPIRY: process.env.ACESS_TOKEN_EXPIRY as ms.StringValue,
   REFRESH_TOKEN_EXPIRY: process.env.REFRESH_TOKEN_EXPIRY as ms.StringValue,
+  WHITELIST_ADMINS_MAIL: ["fabianoandrelaureano@gmail.com"],
 };
 
 export default config;

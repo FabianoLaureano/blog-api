@@ -2,6 +2,7 @@ import { logger } from "../../../lib/winston.ts";
 import config from "../../../config/index.ts";
 import type { Request, Response } from "express";
 import User from "../../../models/user.ts";
+import Token from "../../../models/token.ts";
 import type { IUser } from "../../../models/user.ts";
 import { generateAccessToken, generateRefreshToken } from "../../../lib/jwt.ts";
 
@@ -9,6 +10,19 @@ type UserData = Pick<IUser, "username" | "email" | "password" | "role">;
 
 const register = async (req: Request, res: Response): Promise<void> => {
   const { username, email, password, role } = req.body as UserData;
+
+  if (role === "admin" && !config.WHITELIST_ADMINS_MAIL.includes(email)) {
+    res.status(403).json({
+      code: "AuthorizationError",
+      message: "You cannot register as an admin",
+    });
+
+    logger.warn(
+      `User with email ${email} tried to register as an admin but is not in the whitelist`
+    );
+
+    return;
+  }
 
   const newUser = await User.create({
     username,
@@ -19,6 +33,16 @@ const register = async (req: Request, res: Response): Promise<void> => {
 
   const accessToken = generateAccessToken(newUser._id);
   const refreshToken = generateRefreshToken(newUser._id);
+
+  await Token.create({
+    token: refreshToken,
+    userId: newUser._id,
+  });
+
+  logger.info("Refresh token created for user", {
+    userId: newUser._id,
+    token: refreshToken,
+  });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
