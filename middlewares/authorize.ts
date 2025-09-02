@@ -1,0 +1,42 @@
+import { logger } from "../lib/winston.ts";
+import User from "../models/user.ts";
+import type { Request, Response, NextFunction } from "express";
+
+export type AuthRole = "admin" | "user";
+
+const authorize = (roles: AuthRole[]) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.userId;
+
+    try {
+      const user = await User.findById(userId).select("role").exec();
+
+      if (!user) {
+        res.status(404).json({
+          code: "NotFound",
+          message: "User not found",
+        });
+        return;
+      }
+
+      if (!roles.includes(user.role)) {
+        res.status(403).json({
+          code: "AuthorizationError",
+          message: "Acess Denied",
+        });
+        return;
+      }
+
+      return next();
+    } catch (err) {
+      res.status(500).json({
+        code: "ServerError",
+        message: "Internal Server Error",
+        error: err,
+      });
+      logger.error("Error while authorizing user", err);
+    }
+  };
+};
+
+export default authorize;
