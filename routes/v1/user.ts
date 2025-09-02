@@ -8,6 +8,7 @@ import getCurrentUser from "../../controllers/v1/user/get-current-user.ts";
 import updateCurrentUser from "../../controllers/v1/user/update-current-user.ts";
 import deleteCurrentUser from "../../controllers/v1/user/delete-current-user.ts";
 import getAllUsers from "../../controllers/v1/user/get-all-users.ts";
+import getUserById from "../../controllers/v1/user/get-user-by-id.ts";
 
 const router = Router();
 
@@ -100,6 +101,15 @@ router.get(
     .withMessage("Offset must be a positive integer"),
   validationError,
   getAllUsers
+);
+
+router.get(
+  "/:userId",
+  authenticate,
+  authorize(["admin"]),
+  param("userId").not().isEmpty().isMongoId().withMessage("Invalid user ID"),
+  validationError,
+  getUserById
 );
 
 export default router;
