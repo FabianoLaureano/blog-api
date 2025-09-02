@@ -6,6 +6,8 @@ import User from "../../models/user.ts";
 import authorize from "../../middlewares/authorize.ts";
 import getCurrentUser from "../../controllers/v1/user/get-current-user.ts";
 import updateCurrentUser from "../../controllers/v1/user/update-current-user.ts";
+import deleteCurrentUser from "../../controllers/v1/user/delete-current-user.ts";
+import getAllUsers from "../../controllers/v1/user/get-all-users.ts";
 
 const router = Router();
 
@@ -75,6 +77,29 @@ router.put(
 
   validationError,
   updateCurrentUser
+);
+
+router.delete(
+  "/current",
+  authenticate,
+  authorize(["admin", "user"]),
+  deleteCurrentUser
+);
+
+router.get(
+  "/",
+  authenticate,
+  authorize(["admin"]),
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 50 })
+    .withMessage("Limit must be between 1 and 50"),
+  query("offset")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("Offset must be a positive integer"),
+  validationError,
+  getAllUsers
 );
 
 export default router;
