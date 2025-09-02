@@ -1,11 +1,10 @@
 import { logger } from "../../../lib/winston.ts";
 import User from "../../../models/user.ts";
 import type { Request, Response } from "express";
-import config from "../../../config/index.ts";
 
 const getUserById = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.params.userId;
   try {
-    const userId = req.params.userId;
     const user = await User.findById(userId).select("-__v").exec();
 
     if (!user) {

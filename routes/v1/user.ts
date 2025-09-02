@@ -9,6 +9,7 @@ import updateCurrentUser from "../../controllers/v1/user/update-current-user.ts"
 import deleteCurrentUser from "../../controllers/v1/user/delete-current-user.ts";
 import getAllUsers from "../../controllers/v1/user/get-all-users.ts";
 import getUserById from "../../controllers/v1/user/get-user-by-id.ts";
+import deleteUserById from "../../controllers/v1/user/delete-user-by-id.ts";
 
 const router = Router();
 
@@ -110,6 +111,15 @@ router.get(
   param("userId").not().isEmpty().isMongoId().withMessage("Invalid user ID"),
   validationError,
   getUserById
+);
+
+router.delete(
+  "/:userId",
+  authenticate,
+  authorize(["admin"]),
+  param("userId").not().isEmpty().isMongoId().withMessage("Invalid user ID"),
+  validationError,
+  deleteUserById
 );
 
 export default router;

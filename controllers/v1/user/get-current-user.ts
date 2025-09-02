@@ -3,9 +3,8 @@ import User from "../../../models/user.ts";
 import type { Request, Response } from "express";
 
 const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.userId;
   try {
-    const userId = req.userId;
-
     const user = await User.findById(userId).select("-__v").lean().exec();
 
     res.status(200).json({
