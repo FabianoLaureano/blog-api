@@ -9,6 +9,7 @@ import uploadBlogBanner from "../../middlewares/upload-blog-banner.ts";
 import getAllBlogs from "../../controllers/v1/blog/get-all-blogs.ts";
 import getBlogsByUser from "../../controllers/v1/blog/get-blogs-by-user.ts";
 import getBlogBySlug from "../../controllers/v1/blog/get-blog-by-slug.ts";
+import updateBlog from "../../controllers/v1/blog/update-blog.ts";
 
 const upload = multer();
 
@@ -76,4 +77,25 @@ router.get(
   validationError,
   getBlogBySlug
 );
+
+router.put(
+  "/:blogId",
+  authenticate,
+  authorize(["admin"]),
+  param("blogId").isMongoId().withMessage("Invalid blog ID"),
+  upload.single("banner_image"),
+  body("title")
+    .optional()
+    .isLength({ max: 180 })
+    .withMessage("Title must be less than 180 characters"),
+  body("content"),
+  body("status")
+    .optional()
+    .isIn(["draft", "published"])
+    .withMessage("Status must be either draft or published"),
+  validationError,
+  uploadBlogBanner("put"),
+  updateBlog
+);
+
 export default router;
