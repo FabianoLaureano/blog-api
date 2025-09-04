@@ -10,6 +10,7 @@ import getAllBlogs from "../../controllers/v1/blog/get-all-blogs.ts";
 import getBlogsByUser from "../../controllers/v1/blog/get-blogs-by-user.ts";
 import getBlogBySlug from "../../controllers/v1/blog/get-blog-by-slug.ts";
 import updateBlog from "../../controllers/v1/blog/update-blog.ts";
+import deleteBlog from "../../controllers/v1/blog/delete-blog.ts";
 
 const upload = multer();
 
@@ -97,5 +98,7 @@ router.put(
   uploadBlogBanner("put"),
   updateBlog
 );
+
+router.delete("/:blogId", authenticate, authorize(["admin"]), deleteBlog);
 
 export default router;
