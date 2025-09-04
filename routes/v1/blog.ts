@@ -3,9 +3,10 @@ import { param, query, body } from "express-validator";
 import authenticate from "../../middlewares/authenticate.ts";
 import validationError from "../../middlewares/validationError.ts";
 import authorize from "../../middlewares/authorize.ts";
-import createBlog from "../../controllers/v1/controller/create-blog.ts";
+import createBlog from "../../controllers/v1/blog/create-blog.ts";
 import multer from "multer";
 import uploadBlogBanner from "../../middlewares/upload-blog-banner.ts";
+import getAllBlogs from "../../controllers/v1/blog/get-all-blogs.ts";
 
 const upload = multer();
 
@@ -30,6 +31,22 @@ router.post(
   validationError,
   uploadBlogBanner("post"),
   createBlog
+);
+
+router.get(
+  "/",
+  authenticate,
+  authorize(["admin", "user"]),
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 50 })
+    .withMessage("Limit must be between 1 and 50"),
+  query("offset")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("Offset must be a positive integer"),
+  validationError,
+  getAllBlogs
 );
 
 export default router;

@@ -11,6 +11,6 @@
     "skipLibCheck": true,
     "moduleResolution": "node16"
   },
-  "include": ["src/**/*", "@types/**/*"],
+  "include": ["src/**/*", "@types/**/*", "controllers/**/*"],
   "exclude": ["node_modules"]
 }
