@@ -5,6 +5,7 @@ import { body, param } from "express-validator";
 import validationError from "../../middlewares/validationError.ts";
 import commentBlog from "../../controllers/v1/comment/comment-blog.ts";
 import getCommentsByBlog from "../../controllers/v1/comment/get-comments-by-blog.ts";
+import deleteComment from "../../controllers/v1/comment/delete-comment.ts";
 
 const router = Router();
 
@@ -25,6 +26,15 @@ router.get(
   param("blogId").isMongoId().withMessage("Invalid blog ID"),
   validationError,
   getCommentsByBlog
+);
+
+router.delete(
+  "/:commentId",
+  authenticate,
+  authorize(["admin", "user"]),
+  param("commentId").isMongoId().withMessage("Invalid comment ID"),
+  validationError,
+  deleteComment
 );
 
 export default router;
