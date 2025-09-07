@@ -28,35 +28,33 @@ sequenceDiagram
     Client->>Server: POST /api/v1/auth/login (email, password)
     Note right of Client: Cliente envia credenciais.
 
-    Server-->>Client: 200 OK { accessToken } (no corpo)<br/>(Set-Cookie: refreshToken no header)
+    Server-->>Client: 200 OK { accessToken } e refreshToken (em cookie)
     Note left of Server: Servidor valida e retorna os tokens.
 
-    Client->>Server: GET /api/v1/users/current<br/>(Header: Authorization: Bearer accessToken)
-    Note right of Client: Cliente acessa rota protegida com o Access Token.
+    Client->>Server: GET /api/v1/users/current (com Bearer Token)
+    Note right of Client: Cliente acessa rota protegida.
 
     Server-->>Client: 200 OK { ...dados do usuário... }
-    Note left of Server: Servidor retorna os dados solicitados.
+    Note left of Server: Servidor retorna os dados.
 
-    loop O tempo passa e o Access Token expira
-
+    loop O tempo passa, Access Token expira
     end
 
-    Client->>Server: GET /api/v1/blogs<br/>(Header: Authorization: Bearer accessToken_expirado)
-    Note right of Client: Cliente tenta acessar rota com token expirado.
+    Client->>Server: GET /api/v1/blogs (com Bearer Token expirado)
+    Note right of Client: Cliente tenta acessar rota.
 
     Server-->>Client: 401 Unauthorized
     Note left of Server: Servidor rejeita o acesso.
 
     Client->>Server: POST /api/v1/auth/refresh-token
-    Note right of Client: Cliente solicita um novo Access Token.<br/>O cookie com o Refresh Token é enviado automaticamente.
+    Note right of Client: Cliente solicita novo token (cookie é enviado automaticamente).
 
     Server-->>Client: 200 OK { accessToken: novo_token }
-    Note left of Server: Servidor valida o Refresh Token e emite um novo Access Token.
+    Note left of Server: Servidor emite novo Access Token.
 
-    Client->>Server: GET /api/v1/blogs<br/>(Header: Authorization: Bearer novo_token)
-    Note right of Client: Cliente refaz a chamada original com o novo token.
+    Client->>Server: GET /api/v1/blogs (com novo Bearer Token)
+    Note right of Client: Cliente refaz a chamada original.
 
     Server-->>Client: 200 OK { ...dados dos blogs... }
-    Note left of Server: Servidor agora permite o acesso.
-
+    Note left of Server: Servidor permite o acesso.
 ```
